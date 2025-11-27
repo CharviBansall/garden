@@ -27,7 +27,8 @@ export function Garden({ flowers, onPlantClick }: GardenProps) {
             style={{
               left: `${flower.x}%`,
               top: `${flower.y}%`,
-              width: 72,
+              width: 48,
+              height: 48,
               zIndex: 2,
               position: "absolute",
               transform: 'translate(-50%, -50%)',
