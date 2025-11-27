@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     const flowers = await kv.get<Flower[]>(FLOWERS_KEY) || [];
 
     // Find a non-overlapping position
-    let x, y;
+    let x: number, y: number;
     let attempts = 0;
     const maxAttempts = 100;
 
