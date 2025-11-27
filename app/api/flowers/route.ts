@@ -91,3 +91,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ status: 'blocked' }, { status: 400 });
   }
 }
+
+export async function DELETE() {
+  try {
+    await kv.set(FLOWERS_KEY, []);
+    return NextResponse.json({ status: 'ok', message: 'All flowers cleared' });
+  } catch (error) {
+    console.error('Failed to clear flowers:', error);
+    return NextResponse.json({ status: 'error' }, { status: 500 });
+  }
+}
