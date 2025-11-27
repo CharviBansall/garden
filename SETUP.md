@@ -33,15 +33,31 @@ KV_REST_API_READ_ONLY_TOKEN="Ak9UAAIgcDLHGsXqm6mumTFPG2v9VgOdwWN13Zwl9bfuG8kmzom
 KV_REST_API_TOKEN="AU9UAAIncDJjMjk5ZTE0OWM1ZjI0ZGQyOGZiOGIyMzVhMGNjNzM4NnAyMjAzMDg"
 KV_URL="rediss://default:AU9UAAIncDJjMjk5ZTE0OWM1ZjI0ZGQyOGZiOGIyMzVhMGNjNzM4NnAyMjAzMDg@striking-gibbon-20308.upstash.io:6379"
 KV_REDIS_URL="rediss://default:AU9UAAIncDJjMjk5ZTE0OWM1ZjI0ZGQyOGZiOGIyMzVhMGNjNzM4NnAyMjAzMDg@striking-gibbon-20308.upstash.io:6379"
+ADMIN_PASSWORD="cbansal"
 ```
 
-### 4. Restart Your Development Server
+### 4. Set Admin Password (for flower deletion)
+
+To protect flower deletion, set an admin password:
+
+**In Vercel Dashboard:**
+1. Go to your project → **Settings** → **Environment Variables**
+2. Add: `ADMIN_PASSWORD` = `your_secure_password`
+3. Save and redeploy
+
+**For local development:**
+Add to your `.env.local`:
+```
+ADMIN_PASSWORD="your_secure_password"
+```
+
+### 5. Restart Your Development Server
 
 ```bash
 npm run dev
 ```
 
-### 5. Deploy to Vercel
+### 6. Deploy to Vercel
 
 Once connected, your flowers will persist across deployments! Just push to your repo:
 

@@ -8,6 +8,7 @@ export default function Home() {
   const [flowers, setFlowers] = useState<Flower[]>([]);
   const [drawingOpen, setDrawingOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   
   // Fetch flowers on mount
   useEffect(() => {
@@ -21,12 +22,52 @@ export default function Home() {
     setFlowers(f => [...f, flower]);
   }
   
+  function handleAdminToggle() {
+    if (!isAdmin) {
+      const password = prompt('Enter admin password:');
+      if (password) {
+        // Check password with API
+        fetch('/api/flowers/admin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.authenticated) {
+              setIsAdmin(true);
+              setEditMode(true);
+              // Store token in sessionStorage
+              sessionStorage.setItem('adminToken', data.token);
+            } else {
+              alert('Incorrect password');
+            }
+          })
+          .catch(err => console.error('Auth failed:', err));
+      }
+    } else {
+      setIsAdmin(false);
+      setEditMode(false);
+      sessionStorage.removeItem('adminToken');
+    }
+  }
+  
   function handleFlowerRemove(id: string) {
     if (confirm('Remove this flower?')) {
-      fetch(`/api/flowers?id=${id}`, { method: 'DELETE' })
+      const token = sessionStorage.getItem('adminToken');
+      fetch(`/api/flowers?id=${id}`, { 
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
         .then(res => res.json())
-        .then(() => {
-          setFlowers(f => f.filter(flower => flower.id !== id));
+        .then((data) => {
+          if (data.status === 'ok') {
+            setFlowers(f => f.filter(flower => flower.id !== id));
+          } else {
+            alert('Failed to remove flower');
+          }
         })
         .catch(err => console.error('Failed to remove flower:', err));
     }
@@ -50,14 +91,14 @@ export default function Home() {
           </button>
           <button
             type="button"
-            onClick={() => setEditMode(!editMode)}
+            onClick={handleAdminToggle}
             className={`inline-flex items-center justify-center rounded-full px-6 py-2 text-sm transition-colors ${
-              editMode 
+              isAdmin 
                 ? 'bg-[#E8B4B8] text-[#5A2C2E] hover:bg-[#D9A5A9]' 
                 : 'bg-[#E5E5E5] text-[#333] hover:bg-[#D5D5D5]'
             }`}
           >
-            {editMode ? 'done editing' : 'remove flowers'}
+            {isAdmin ? 'done editing' : 'admin'}
           </button>
         </div>
         <DrawingPanel

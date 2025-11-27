@@ -94,6 +94,24 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    // Check admin authentication
+    const authHeader = request.headers.get('Authorization');
+    const adminPassword = process.env.ADMIN_PASSWORD || 'changeme123';
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ status: 'unauthorized' }, { status: 401 });
+    }
+    
+    const token = authHeader.substring(7);
+    try {
+      const decoded = Buffer.from(token, 'base64').toString();
+      if (!decoded.startsWith(adminPassword)) {
+        return NextResponse.json({ status: 'unauthorized' }, { status: 401 });
+      }
+    } catch {
+      return NextResponse.json({ status: 'unauthorized' }, { status: 401 });
+    }
+    
     const { searchParams } = new URL(request.url);
     const flowerId = searchParams.get('id');
     
