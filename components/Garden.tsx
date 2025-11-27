@@ -1,0 +1,41 @@
+import Image from "next/image";
+import React from "react";
+import type { Flower } from "../app/api/flowers/route";
+
+interface GardenProps {
+  flowers: Flower[];
+  onPlantClick: () => void;
+}
+export function Garden({ flowers, onPlantClick }: GardenProps) {
+  return (
+    <div className="relative mx-auto w-full max-w-2xl flex items-center justify-center">
+      <Image
+        src="/garden.png"
+        alt="charvs' secret garden illustration"
+        width={1200}
+        height={700}
+        priority
+        className="w-full h-auto"
+      />
+      {/* Overlay all planted flowers as sticker-like images */}
+      <div className="absolute left-[10%] right-[10%] top-[18%] bottom-[8%] pointer-events-none select-none">
+        {flowers.map((flower) => (
+          <img
+            key={flower.id}
+            src={flower.imageUrl}
+            alt="flower"
+            style={{
+              left: `${flower.x}%`,
+              top: `${flower.y}%`,
+              width: 72,
+              zIndex: 2,
+              position: "absolute",
+              filter: "drop-shadow(0 2px 4px #0002)",
+              transition: "all 0.4s cubic-bezier(.37,1.14,.51,.98)",
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
