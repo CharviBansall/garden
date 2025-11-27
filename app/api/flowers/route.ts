@@ -92,12 +92,24 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function DELETE() {
+export async function DELETE(request: NextRequest) {
   try {
-    await kv.set(FLOWERS_KEY, []);
-    return NextResponse.json({ status: 'ok', message: 'All flowers cleared' });
+    const { searchParams } = new URL(request.url);
+    const flowerId = searchParams.get('id');
+    
+    if (flowerId) {
+      // Delete specific flower by ID
+      const flowers = await kv.get<Flower[]>(FLOWERS_KEY) || [];
+      const updatedFlowers = flowers.filter(f => f.id !== flowerId);
+      await kv.set(FLOWERS_KEY, updatedFlowers);
+      return NextResponse.json({ status: 'ok', message: 'Flower removed' });
+    } else {
+      // Delete all flowers
+      await kv.set(FLOWERS_KEY, []);
+      return NextResponse.json({ status: 'ok', message: 'All flowers cleared' });
+    }
   } catch (error) {
-    console.error('Failed to clear flowers:', error);
+    console.error('Failed to delete flowers:', error);
     return NextResponse.json({ status: 'error' }, { status: 500 });
   }
 }
