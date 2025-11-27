@@ -29,9 +29,10 @@ Your garden now uses Vercel KV (Redis) to store flowers persistently! Here's how
 4. Paste the variables:
 
 ```
-KV_REST_API_URL=your_kv_rest_api_url_here
-KV_REST_API_TOKEN=your_kv_rest_api_token_here
-KV_REST_API_READ_ONLY_TOKEN=your_kv_rest_api_read_only_token_here
+KV_REST_API_READ_ONLY_TOKEN="Ak9UAAIgcDLHGsXqm6mumTFPG2v9VgOdwWN13Zwl9bfuG8kmzom-KA"
+KV_REST_API_TOKEN="AU9UAAIncDJjMjk5ZTE0OWM1ZjI0ZGQyOGZiOGIyMzVhMGNjNzM4NnAyMjAzMDg"
+KV_URL="rediss://default:AU9UAAIncDJjMjk5ZTE0OWM1ZjI0ZGQyOGZiOGIyMzVhMGNjNzM4NnAyMjAzMDg@striking-gibbon-20308.upstash.io:6379"
+KV_REDIS_URL="rediss://default:AU9UAAIncDJjMjk5ZTE0OWM1ZjI0ZGQyOGZiOGIyMzVhMGNjNzM4NnAyMjAzMDg@striking-gibbon-20308.upstash.io:6379"
 ```
 
 ### 4. Restart Your Development Server

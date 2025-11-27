@@ -18,7 +18,7 @@ export function Garden({ flowers, onPlantClick }: GardenProps) {
         className="w-full h-auto"
       />
       {/* Overlay all planted flowers as sticker-like images */}
-      <div className="absolute left-[10%] right-[10%] top-[18%] bottom-[8%] pointer-events-none select-none">
+      <div className="absolute inset-0 pointer-events-none select-none">
         {flowers.map((flower) => (
           <img
             key={flower.id}
@@ -30,6 +30,7 @@ export function Garden({ flowers, onPlantClick }: GardenProps) {
               width: 72,
               zIndex: 2,
               position: "absolute",
+              transform: 'translate(-50%, -50%)',
               filter: "drop-shadow(0 2px 4px #0002)",
               transition: "all 0.4s cubic-bezier(.37,1.14,.51,.98)",
             }}

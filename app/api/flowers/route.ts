@@ -58,14 +58,14 @@ export async function POST(request: NextRequest) {
     // Get current flowers from KV
     const flowers = await kv.get<Flower[]>(FLOWERS_KEY) || [];
 
-    // Find a non-overlapping position
+    // Find a non-overlapping position (percentages across the full garden)
     let x: number, y: number;
     let attempts = 0;
     const maxAttempts = 100;
 
     do {
-      x = Math.floor(Math.random() * (90 - 10 + 1)) + 10;
-      y = Math.floor(Math.random() * (80 - 20 + 1)) + 20;
+      x = Math.floor(Math.random() * 60) + 20; // 20-80
+      y = Math.floor(Math.random() * 50) + 25; // 25-75 (avoid top/bottom)
       attempts++;
     } while (
       attempts < maxAttempts &&
