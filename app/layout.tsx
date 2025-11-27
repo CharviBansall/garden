@@ -26,8 +26,8 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "charvs’ secret flower garden 🌸",
-  description: "draw and plant a tiny flower in charvs’ secret garden. no accounts, no names, just quiet kindness.",
+  title: "Plant a flower in Charvi's garden!",
+  description: "draw and plant a tiny flower in charvs' secret garden. no accounts, no names, just quiet kindness.",
 };
 
 export default function RootLayout({
