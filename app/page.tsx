@@ -7,9 +7,12 @@ import type { Flower } from "./api/flowers/route";
 export default function Home() {
   const [flowers, setFlowers] = useState<Flower[]>([]);
   const [drawingOpen, setDrawingOpen] = useState(false);
-  // No flowers loaded
+  // Fetch flowers on mount
   useEffect(() => {
-    setFlowers([]);
+    fetch('/api/flowers')
+      .then(res => res.json())
+      .then(data => setFlowers(data))
+      .catch(err => console.error('Failed to fetch flowers:', err));
   }, []);
   function handlePlanted(flower: Flower) {
     setFlowers(f => [...f, flower]);

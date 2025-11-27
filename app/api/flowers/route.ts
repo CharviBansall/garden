@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { kv } from '@vercel/kv';
 
 export type Flower = {
   id: string;
@@ -8,8 +9,18 @@ export type Flower = {
   createdAt: string;
 };
 
-// In-memory array for flowers (will reset on reload)
-const flowers: Flower[] = [];
+const FLOWERS_KEY = 'charvis-garden:flowers';
+
+// Function to check if two flowers would overlap
+function flowersOverlap(flower1: Flower, flower2: Flower): boolean {
+  const minDistanceX = 10; // Minimum 10% separation in x
+  const minDistanceY = 10; // Minimum 10% separation in y
+
+  const dx = Math.abs(flower1.x - flower2.x);
+  const dy = Math.abs(flower1.y - flower2.y);
+
+  return dx < minDistanceX && dy < minDistanceY;
+}
 
 // Moderation stub function
 async function isBadImage(image: string): Promise<boolean> {
@@ -18,7 +29,13 @@ async function isBadImage(image: string): Promise<boolean> {
 }
 
 export async function GET() {
-  return NextResponse.json(flowers);
+  try {
+    const flowers = await kv.get<Flower[]>(FLOWERS_KEY) || [];
+    return NextResponse.json(flowers);
+  } catch (error) {
+    console.error('Failed to fetch flowers:', error);
+    return NextResponse.json([]);
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -38,9 +55,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ status: 'blocked' });
     }
 
-    // Random x/y within specified bounds
-    const x = Math.floor(Math.random() * (90 - 10 + 1)) + 10;
-    const y = Math.floor(Math.random() * (80 - 20 + 1)) + 20;
+    // Get current flowers from KV
+    const flowers = await kv.get<Flower[]>(FLOWERS_KEY) || [];
+
+    // Find a non-overlapping position
+    let x, y;
+    let attempts = 0;
+    const maxAttempts = 100;
+
+    do {
+      x = Math.floor(Math.random() * (90 - 10 + 1)) + 10;
+      y = Math.floor(Math.random() * (80 - 20 + 1)) + 20;
+      attempts++;
+    } while (
+      attempts < maxAttempts &&
+      flowers.some(existingFlower => flowersOverlap({ x, y } as Flower, existingFlower))
+    );
+
+    // If we couldn't find a spot after max attempts, place it anyway
     const flower: Flower = {
       id: Math.random().toString(36).slice(2),
       imageUrl: image,
@@ -48,9 +80,14 @@ export async function POST(request: NextRequest) {
       y,
       createdAt: new Date().toISOString(),
     };
+    
+    // Add flower and save to KV
     flowers.push(flower);
+    await kv.set(FLOWERS_KEY, flowers);
+    
     return NextResponse.json({ status: 'ok', flower });
   } catch (e) {
+    console.error('Failed to plant flower:', e);
     return NextResponse.json({ status: 'blocked' }, { status: 400 });
   }
 }
